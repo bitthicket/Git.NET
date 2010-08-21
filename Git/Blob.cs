@@ -5,7 +5,11 @@ using System.Text;
 
 namespace Git
 {
-    public class Class1
+    public class Blob : Object
     {
+        public Blob()
+        {
+            
+        }
     }
 }
