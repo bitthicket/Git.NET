@@ -3,7 +3,7 @@
     public interface IObject
     {
         byte[] Digest { get; }
-        ObjectType Type { get; set; }
+        ObjectType Type { get; }
         ulong Size { get; }        
 
         void Deflate(string outputPath);

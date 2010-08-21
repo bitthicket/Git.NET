@@ -42,7 +42,7 @@ namespace Git
         {
             m_Blocks.CompleteAdding();
             try { m_ProcessingTask.Wait(); }
-            finally { base.Close(); }
+            finally { base.Close(); m_WriteableStream.Close(); }
         }
 
         public override bool CanRead
