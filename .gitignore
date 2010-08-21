@@ -1,4 +1,3 @@
-
 #ignore thumbnails created by windows
 Thumbs.db
 #Ignore files build by Visual Studio
@@ -21,9 +20,12 @@ Thumbs.db
 *.log
 [Bb]in
 [Dd]ebug*/
+[Bb]ackup
 *.lib
 *.sbr
 obj/
 [Rr]elease*/
 _ReSharper*/
+UpgradeLog.[Xx][Mm][Ll]
+_UpgradeReport_Files
 [Tt]est[Rr]esult*
