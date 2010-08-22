@@ -5,7 +5,7 @@ using System.Text;
 
 using Microsoft.Win32;
 
-using ComponentAce.Compression.Libs.zlib;
+using Ionic.Zlib;
 using NLog;
 
 namespace Git
@@ -17,6 +17,7 @@ namespace Git
 
         private string m_Path;
         private byte[] m_Digest;
+        private long m_HeaderLen;
         private ObjectType m_Type;
         private ulong m_Size;
 
@@ -29,12 +30,12 @@ namespace Git
             string digestString = Path.GetFileName(Path.GetDirectoryName(path)) + Path.GetFileName(path);
             logger.Trace("filename indicates digest of: {0}", digestString);
             byte[] digest = Encoding.ASCII.GetBytes(digestString.ToCharArray());
-
+            
             byte[] buffer = new byte[MaxHeaderLength];
-            using (ZInputStream zInput = new ZInputStream(File.Open(path, FileMode.Open, FileAccess.Read)))
+            using (ZlibStream input = new ZlibStream(File.Open(path, FileMode.Open, FileAccess.Read), CompressionMode.Decompress))
             {
                 logger.Trace("reading {0} bytes", MaxHeaderLength);
-                zInput.Read(buffer, 0, MaxHeaderLength);
+                input.Read(buffer, 0, MaxHeaderLength);
             }
 
             string[] header = null;
@@ -48,41 +49,39 @@ namespace Git
             }
 
             logger.Trace("got header: {0} {1}", header[0], header[1]);           
+            
 
             logger.Debug("got object of type {0}", header[0]);
             // TODO use header to create appropriate object
-            IObject result = null;
+            Object result = null;            
+
             switch (header[0])
             {
                 case "blob":
-                    var blob = new Blob();
-                    blob.m_Path = path;
-                    blob.m_Digest = digest;
-                    blob.m_Type = ObjectType.Blob;
-                    blob.m_Size = Convert.ToUInt64(header[1]);
+                    var blob = new Blob();                    
+                    blob.m_Type = ObjectType.Blob;                    
                     result = blob;
                     break;
                 case "tree":
-                    var tree = new Tree();
-                    tree.m_Path = path;
-                    tree.m_Digest = digest;
-                    tree.m_Type = ObjectType.Tree;
-                    tree.m_Size = Convert.ToUInt64(header[1]);
+                    var tree = new Tree();                    
+                    tree.m_Type = ObjectType.Tree;                    
                     result = tree;
                     break;
                 case "commit":
                     var commit = new Commit();
-                    commit.m_Path = path;
-                    commit.m_Digest = digest;
-                    commit.m_Type = ObjectType.Commit;
-                    commit.m_Size = Convert.ToUInt64(header[1]);
+                    commit.m_Type = ObjectType.Commit;                    
                     result = commit;
                     break;
                 case "tag":
                     break;
                 default:
                     break;
-            }                        
+            }
+
+            result.m_Path = path;
+            result.m_Digest = digest;
+            result.m_Size = Convert.ToUInt64(header[1]);
+            result.m_HeaderLen = header[0].Length + header[1].Length + 2; // + 2 to account for the ' ' and '\0'.
    
             return result;
         }
@@ -150,7 +149,7 @@ namespace Git
 
         public void Deflate(string outputPath)
         {
-            using (ZInputStream zInput = new ZInputStream(File.Open(m_Path, FileMode.Open, FileAccess.Read)))
+            using (ZlibStream input = new ZlibStream(File.Open(m_Path, FileMode.Open, FileAccess.Read), CompressionMode.Decompress))
             {
                 int maxBlockSize;
                 logger.Trace("Opening registry key to find MaxBlockSize");
@@ -169,8 +168,8 @@ namespace Git
                 {
                     byte[] buffer = new byte[maxBlockSize];
                     int readCount = 0;
-                    // TODO: why isn't this reading a whole block?
-                    while (maxBlockSize == (readCount = zInput.Read(buffer, 0, maxBlockSize)))
+                    input.Read(buffer, 0, (int)m_HeaderLen);
+                    while (maxBlockSize == (readCount = input.Read(buffer, 0, maxBlockSize)))
                     {
                         logger.Trace("read {0} bytes", readCount);
                         t0.Write(buffer, 0, readCount);

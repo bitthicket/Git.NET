@@ -113,7 +113,7 @@ namespace UnitTests
 
             using (Stream input = File.OpenRead(outputPath))
             {
-                Assert.AreEqual(input.Length, target.Size);
+                Assert.AreEqual((ulong)input.Length, target.Size);
             }
 
             //File.Delete(outputPath);

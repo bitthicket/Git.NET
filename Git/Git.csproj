@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zlib">
+      <HintPath>..\Ref\Bin\Ionic.Zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="ManagedZLib">
+      <HintPath>..\Ref\Bin\ManagedZLib.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,12 +55,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransferStream.cs" />
     <Compile Include="Tree.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\zlib\zlib.net.csproj">
-      <Project>{0C89B7A2-A218-49E4-B545-5B044A45F977}</Project>
-      <Name>zlib.net</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

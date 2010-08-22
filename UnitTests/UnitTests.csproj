@@ -64,10 +64,6 @@
       <Project>{D3E7619D-BD31-4AB1-B143-4CFC3A8C1561}</Project>
       <Name>Git</Name>
     </ProjectReference>
-    <ProjectReference Include="..\zlib\zlib.net.csproj">
-      <Project>{0C89B7A2-A218-49E4-B545-5B044A45F977}</Project>
-      <Name>zlib.net</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
